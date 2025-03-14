@@ -18,7 +18,7 @@ export async function sendVerificationEmail(email, code) {
   });
 
   await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
+    from: "La quiniela pro <laquinielapro@gmail.com>",
     to: email,
     subject: 'Tu codigo de inicio de sesion',
     text: `Tu codigo de inicio de sesion es: ${code}`,

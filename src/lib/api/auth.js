@@ -1,3 +1,7 @@
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
 /**
  * Verifies if the provided code matches the stored verification code for the email
  * @param {string} email - The user's email address
@@ -7,7 +11,7 @@
 export async function verifyCode(email, code) {
   try {
     // Get the stored verification data from the database
-    const verificationData = await db.verificationCodes.findUnique({
+    const verificationData = await prisma.VerificationCode.findFirst({
       where: { email }
     });
 
@@ -22,7 +26,7 @@ export async function verifyCode(email, code) {
     
     if (isExpired) {
       // Delete expired code
-      await db.verificationCodes.delete({
+      await prisma.VerificationCode.deleteMany({
         where: { email }
       });
       return false;
@@ -33,7 +37,7 @@ export async function verifyCode(email, code) {
 
     if (isValid) {
       // Delete the verification code after successful verification
-      await db.verificationCodes.delete({
+      await prisma.VerificationCode.deleteMany({
         where: { email }
       });
     }

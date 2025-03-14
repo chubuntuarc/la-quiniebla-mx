@@ -1,4 +1,6 @@
-import { verifyCode } from '../../../src/lib/api/auth';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -8,22 +10,45 @@ export default async function handler(req, res) {
 
   try {
     const { email, code } = req.body;
+    console.log('email', email);
+    console.log('code', code);
 
     // Validate required fields
     if (!email || !code) {
       return res.status(400).json({ 
-        error: 'Email y codigo son requeridos' 
+        error: 'Email and code are required' 
       });
     }
 
-    // Verify the code  
-    const isValid = await verifyCode(email, code);
+    // Verify the code using Prisma
+    const verificationEmail = await prisma.verificationCode.findFirst({
+      where: {
+        email
+      },
+    });
+    console.log('verificationEmail', verificationEmail);
+    const verificationRecord = await prisma.verificationCode.findFirst({
+      where: {
+        email,
+        code,
+        expiresAt: {
+          gt: new Date() // Check if code hasn't expired
+        }
+      }
+    });
 
-    if (!isValid) {
+    if (!verificationRecord) {
       return res.status(400).json({ 
-        error: 'Codigo de verificacion invalido' 
+        error: 'Invalid or expired verification code' 
       });
     }
+
+    // Delete the used verification code
+    await prisma.verificationCode.delete({
+      where: {
+        id: verificationRecord.id
+      }
+    });
 
     // If code is valid, return success
     return res.status(200).json({ 
@@ -33,7 +58,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Verification error:', error);
     return res.status(500).json({ 
-      error: 'Error interno del servidor' 
+      error: 'Internal server error' 
     });
   }
 } 

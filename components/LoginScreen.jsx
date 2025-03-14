@@ -28,12 +28,12 @@ const LoginScreen = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Failed to send verification code');
+        setError(data.error || 'Error al enviar el código de verificación');
       } else {
         setCodeSent(true);
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      setError('Ocurrió un error inesperado');
     } finally {
       setIsLoading(false);
     }
@@ -45,18 +45,22 @@ const LoginScreen = () => {
     setIsLoading(true);
 
     try {
-      // First verify the code with our API
       const verifyResponse = await fetch('/api/auth/verify-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, code }),
+        body: JSON.stringify({ 
+          email, 
+          code
+        }),
       });
 
+      const data = await verifyResponse.json();
+      
       if (!verifyResponse.ok) {
-        const errorData = await verifyResponse.text();
-        setError('Código inválido. Por favor verifique e intente de nuevo.');
+        console.error('Error de verificación:', data);
+        setError(data.error || 'Código inválido. Por favor verifique e intente de nuevo.');
         return;
       }
 
@@ -65,15 +69,16 @@ const LoginScreen = () => {
         email,
         code,
         redirect: false,
+        callbackUrl: '/',  // Add explicit callback URL
       });
 
-      console.log('Auth result:', result);
-
       if (result?.error) {
-        if (result.error === 'Authentication failed') {
-          setError('La sesión no pudo ser iniciada. Por favor intente de nuevo.');
+        console.error('Error de inicio de sesión:', result.error);
+        // More specific error message based on the error type
+        if (result.error === 'CredentialsSignin') {
+          setError('Credenciales inválidas. Por favor verifique su código.');
         } else {
-          setError(`Error: ${result.error}`);
+          setError('La sesión no pudo ser iniciada. Por favor intente de nuevo.');
         }
         return;
       }
@@ -82,7 +87,7 @@ const LoginScreen = () => {
         await router.push('/');
       }
     } catch (err) {
-      console.error('Auth error:', err);
+      console.error('Error de autenticación:', err);
       setError('Error de conexión. Por favor intente de nuevo.');
     } finally {
       setIsLoading(false);
