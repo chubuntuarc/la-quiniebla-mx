@@ -26,48 +26,16 @@ const Home = () => {
           <button
             className={styles.sectionHeader}
             onClick={() =>
-              setActiveSection(activeSection === "pools" ? "" : "pools")
-            }
-          >
-            <span>My Pools ({0})</span>
-            <span className={styles.arrow}>▼</span>
-          </button>
-          {/* Add expandable content here */}
-        </div>
-
-        <div className={styles.section}>
-          <button
-            className={styles.sectionHeader}
-            onClick={() =>
               setActiveSection(
                 activeSection === "tournaments" ? "" : "tournaments"
               )
             }
           >
-            <span>My Tournaments ({4})</span>
+            <span>Mis Quinielas ({4})</span>
             <span className={styles.arrow}>▼</span>
           </button>
           {/* Add expandable content here */}
         </div>
-
-        <div className={styles.section}>
-          <button
-            className={styles.sectionHeader}
-            onClick={() =>
-              setActiveSection(activeSection === "contests" ? "" : "contests")
-            }
-          >
-            <span>Contests ({0})</span>
-            <span className={styles.arrow}>▼</span>
-          </button>
-          {/* Add expandable content here */}
-        </div>
-
-        {/* History button */}
-        <button className={styles.historyButton}>
-          <img src="/history-icon.svg" alt="History" />
-          History
-        </button>
       </div>
 
       {/* Bottom Navigation */}
