@@ -45,30 +45,48 @@ const LoginScreen = () => {
     setIsLoading(true);
 
     try {
+      // First verify the code with our API
+      const verifyResponse = await fetch('/api/auth/verify-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, code }),
+      });
+
+      if (!verifyResponse.ok) {
+        const errorData = await verifyResponse.text();
+        setError('Código inválido. Por favor verifique e intente de nuevo.');
+        return;
+      }
+
+      // If verification successful, proceed with sign in
       const result = await signIn('credentials', {
         email,
         code,
         redirect: false,
       });
 
-      if (!result?.ok) {
-        setError('Código inválido. Por favor intente de nuevo.');
-      } else if (result.ok) {
-        await router.push('/dashboard');
+      console.log('Auth result:', result);
+
+      if (result?.error) {
+        if (result.error === 'Authentication failed') {
+          setError('La sesión no pudo ser iniciada. Por favor intente de nuevo.');
+        } else {
+          setError(`Error: ${result.error}`);
+        }
+        return;
+      }
+
+      if (result?.ok) {
+        await router.push('/');
       }
     } catch (err) {
-      setError('Ocurrió un error inesperado');
+      console.error('Auth error:', err);
+      setError('Error de conexión. Por favor intente de nuevo.');
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleFacebookLogin = () => {
-    signIn('facebook', { callbackUrl: '/dashboard' });
-  };
-
-  const handleAppleLogin = () => {
-    signIn('apple', { callbackUrl: '/dashboard' });
   };
 
   return (
