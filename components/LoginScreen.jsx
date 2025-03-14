@@ -17,13 +17,18 @@ const LoginScreen = () => {
     setIsLoading(true);
 
     try {
-      const result = await signIn('email', {
-        email,
-        redirect: false,
+      const response = await fetch('/api/auth/request-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
       });
 
-      if (result.error) {
-        setError(result.error);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to send verification code');
       } else {
         setCodeSent(true);
       }
@@ -46,13 +51,13 @@ const LoginScreen = () => {
         redirect: false,
       });
 
-      if (result.error) {
-        setError(result.error);
-      } else {
-        router.push('/dashboard');
+      if (!result?.ok) {
+        setError('Código inválido. Por favor intente de nuevo.');
+      } else if (result.ok) {
+        await router.push('/dashboard');
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      setError('Ocurrió un error inesperado');
     } finally {
       setIsLoading(false);
     }
