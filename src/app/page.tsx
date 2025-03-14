@@ -34,7 +34,42 @@ const Home = () => {
             <span>Mis Quinielas ({4})</span>
             <span className={styles.arrow}>▼</span>
           </button>
-          {/* Add expandable content here */}
+          {activeSection === "tournaments" && (
+            <div className={styles.tournamentGrid}>
+              <div className={styles.tournamentCard}>
+                <img 
+                  src="/trophy.jpeg" 
+                  alt="Clausura 2025"
+                  className={styles.tournamentImage}
+                />
+                <div className={styles.tournamentTitle}>Clausura 2025</div>
+              </div>
+              <div className={styles.tournamentCard}>
+                <img 
+                  src="/trophy.jpeg" 
+                  alt="Familia Mtz 2025 CL"
+                  className={styles.tournamentImage}
+                />
+                <div className={styles.tournamentTitle}>Familia Mtz 2025 CL</div>
+              </div>
+              <div className={styles.tournamentCard}>
+                <img 
+                  src="/trophy.jpeg" 
+                  alt="Familia Mtz Apertura 2024"
+                  className={styles.tournamentImage}
+                />
+                <div className={styles.tournamentTitle}>Familia Mtz Apertura 2024</div>
+              </div>
+              <div className={styles.tournamentCard}>
+                <img 
+                  src="/trophy.jpeg" 
+                  alt="Familia Mtz Clausura 2024"
+                  className={styles.tournamentImage}
+                />
+                <div className={styles.tournamentTitle}>Familia Mtz Clausura 2024</div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
