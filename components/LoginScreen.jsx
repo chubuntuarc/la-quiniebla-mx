@@ -67,9 +67,11 @@ const LoginScreen = () => {
       // If verification successful, proceed with sign in
       const result = await signIn('credentials', {
         email,
-        code,
+        verificationCode: code,
         redirect: false,
-        callbackUrl: '/',  // Add explicit callback URL
+        callbackUrl: '/',
+        verifyResponse: true,
+        user: data?.user?.id || data?.userId || '',
       });
 
       if (result?.error) {

@@ -10,9 +10,6 @@ export default async function handler(req, res) {
 
   try {
     const { email, code } = req.body;
-    console.log('email', email);
-    console.log('code', code);
-
     // Validate required fields
     if (!email || !code) {
       return res.status(400).json({ 
@@ -21,12 +18,6 @@ export default async function handler(req, res) {
     }
 
     // Verify the code using Prisma
-    const verificationEmail = await prisma.verificationCode.findFirst({
-      where: {
-        email
-      },
-    });
-    console.log('verificationEmail', verificationEmail);
     const verificationRecord = await prisma.verificationCode.findFirst({
       where: {
         email,

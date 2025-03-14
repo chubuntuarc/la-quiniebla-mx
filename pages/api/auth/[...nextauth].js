@@ -10,35 +10,33 @@ export const authOptions = {
       image: '/quiniebla.webp',
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        verificationCode: { label: "Verification Code", type: "text" }
       },
       async authorize(credentials) {
         try {
-          // Add your authentication logic here
-          // Example:
-          const res = await fetch("YOUR_API_ENDPOINT/login", {
-            method: 'POST',
-            body: JSON.stringify(credentials),
-            headers: { "Content-Type": "application/json" }
-          });
-          const user = await res.json();
-
-          if (user) {
-            return user;
+          // Validate required fields
+          if (!credentials?.email || !credentials?.verificationCode) {
+            throw new Error('Email and verification code are required');
           }
-          return null;
+
+          // Use API_URL environment variable instead of NEXT_PUBLIC_API_URL
+          const data = credentials.verifyResponse;
+
+          if (!data) {
+            throw new Error(data.error || 'Invalid verification code');
+          }
+
+          // If verification successful, return user object
+          return {
+            id: credentials.user,
+            email: credentials.email,
+            // Add any other user properties you need from your verification response
+          };
         } catch (error) {
-          throw new Error('Authentication failed');
+          console.error('Auth Error:', error);
+          throw new Error(error.message || 'Authentication failed');
         }
       }
-    }),
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_ID,
-      clientSecret: process.env.FACEBOOK_SECRET,
-    }),
-    AppleProvider({
-      clientId: process.env.APPLE_ID,
-      clientSecret: process.env.APPLE_SECRET,
     }),
   ],
   pages: {
