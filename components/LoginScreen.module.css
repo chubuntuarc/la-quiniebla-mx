@@ -66,6 +66,8 @@
   font-size: 16px;
   transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 2px;
+  text-align: center;
 }
 
 .input:focus {
@@ -74,18 +76,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.forgotPassword {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.forgotPassword:hover {
-  color: white;
-  text-decoration: underline;
-}
-
+.requestCodeButton,
 .loginButton {
   background: #4CAF50;
   color: white;
@@ -99,8 +90,10 @@
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
+  width: 100%;
 }
 
+.requestCodeButton:hover:not(:disabled),
 .loginButton:hover:not(:disabled) {
   background: #45a049;
   transform: translateY(-2px);

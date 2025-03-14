@@ -5,12 +5,36 @@ import styles from './LoginScreen.module.css';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [codeSent, setCodeSent] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e) => {
+  const handleRequestCode = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const result = await signIn('email', {
+        email,
+        redirect: false,
+      });
+
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setCodeSent(true);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyCode = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -18,7 +42,7 @@ const LoginScreen = () => {
     try {
       const result = await signIn('credentials', {
         email,
-        password,
+        code,
         redirect: false,
       });
 
@@ -45,7 +69,6 @@ const LoginScreen = () => {
   return (
     <div className={styles.container}>
       <div className={styles.welcomeSection}>
-        <h1>WELCOME</h1>
         <img 
           src="/quiniebla.webp" 
           alt="Quiniela Pro Logo" 
@@ -53,42 +76,52 @@ const LoginScreen = () => {
         />
       </div>
 
-      <form onSubmit={handleLogin} className={styles.loginForm}>
+      <form onSubmit={codeSent ? handleVerifyCode : handleRequestCode} className={styles.loginForm}>
         <div className={styles.inputGroup}>
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Tu Correo"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className={styles.input}
+            disabled={codeSent}
           />
         </div>
 
-        <div className={styles.inputGroup}>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={styles.input}
-          />
-        </div>
+        {codeSent && (
+          <div className={styles.inputGroup}>
+            <input
+              type="text"
+              placeholder="Ingresa el codigo"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              className={styles.input}
+            />
+          </div>
+        )}
 
         {error && <div className={styles.error}>{error}</div>}
-
-        <a href="/forgot-password" className={styles.forgotPassword}>
-          Forgot password?
-        </a>
 
         <button 
           type="submit" 
           className={styles.loginButton}
           disabled={isLoading}
         >
-          {isLoading ? 'LOGGING IN...' : 'LOGIN'}
+          {isLoading ? 'PROCESANDO...' : codeSent ? 'VERIFICAR CODIGO' : 'OBTENER CODIGO DE INICIO'}
         </button>
 
-        <div className={styles.socialLogin}>
+        {codeSent && (
+          <button 
+            type="button" 
+            className={styles.resendButton}
+            onClick={handleRequestCode}
+            disabled={isLoading}
+          >
+            Reenviar codigo
+          </button>
+        )}
+
+        {/* <div className={styles.socialLogin}>
           <p>or login with</p>
           <div className={styles.socialButtons}>
             <button 
@@ -108,16 +141,12 @@ const LoginScreen = () => {
               <img src="/apple-icon.png" alt="Apple login" />
             </button>
           </div>
-        </div>
+        </div> */}
 
         <p className={styles.terms}>
-          By logging in, you are agreeing to the Terms of Service.
+          Al iniciar sesión, aceptas los Términos de Servicio.
         </p>
 
-        <div className={styles.signup}>
-          <span>DON'T HAVE AN ACCOUNT? </span>
-          <a href="/signup">SIGN UP</a>
-        </div>
       </form>
     </div>
   );
